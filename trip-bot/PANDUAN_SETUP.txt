@@ -1,0 +1,158 @@
+# 🗺️ PANDUAN SETUP BOT TRIP — LANGKAH DEMI LANGKAH
+# ════════════════════════════════════════════════════════
+
+## PERKIRAAN WAKTU SETUP: 30–45 menit
+
+---
+
+## LANGKAH 1 — Buat Telegram Bot (5 menit)
+
+1. Buka Telegram, cari @BotFather
+2. Ketik /newbot
+3. Masukkan nama bot → misal: Trip Bali 2025
+4. Masukkan username bot → misal: tripbali2025_bot
+5. Salin TOKEN yang diberikan (format: 123456:ABC-DEF...)
+6. Paste ke TELEGRAM_TOKEN di config.py
+
+
+## LANGKAH 2 — Dapatkan API Key Gemini (5 menit) — 100% GRATIS
+
+1. Buka https://aistudio.google.com
+2. Login pakai akun Google biasa (tanpa kartu kredit!)
+3. Klik tombol "Get API Key" (pojok kiri atas)
+4. Klik "Create API Key"
+5. Pilih project Google Cloud (buat baru jika belum ada)
+6. Salin key (format: AIzaSy-...)
+7. Paste ke GEMINI_API_KEY di config.py
+
+Limit gratis Gemini Flash:
+- 15 request/menit
+- 1.500 request/hari
+- 1 juta token/menit
+→ Lebih dari cukup untuk trip!
+
+
+## LANGKAH 3 — Setup Google Sheets (15 menit)
+
+### A. Buat Spreadsheet
+1. Buka https://sheets.google.com
+2. Buat spreadsheet baru, beri nama: "Trip Expenses"
+3. Salin ID dari URL:
+   https://docs.google.com/spreadsheets/d/[SALIN_INI]/edit
+4. Paste ke SHEET_ID di config.py
+
+### B. Buat Service Account (untuk akses dari bot)
+1. Buka https://console.cloud.google.com
+2. Buat project baru (klik "New Project")
+3. Aktifkan 2 API berikut (cari di search bar):
+   - "Google Sheets API" → Enable
+   - "Google Drive API"  → Enable
+4. Klik "IAM & Admin" → "Service Accounts"
+5. Klik "+ Create Service Account"
+   - Name: trip-bot
+   - Klik "Create and Continue" → "Done"
+6. Klik service account yang baru dibuat
+7. Tab "Keys" → "Add Key" → "Create new key" → JSON → Create
+8. File JSON otomatis terdownload
+9. Rename file jadi credentials.json
+10. Letakkan di folder yang sama dengan bot.py
+
+### C. Beri akses ke spreadsheet
+1. Buka file credentials.json, cari email (client_email):
+   trip-bot@nama-project.iam.gserviceaccount.com
+2. Buka spreadsheet Anda
+3. Klik tombol "Share" (pojok kanan atas)
+4. Paste email service account tadi
+5. Set role: Editor → Send
+
+
+## LANGKAH 4 — Sesuaikan config.py
+
+Edit file config.py:
+- TELEGRAM_TOKEN  → token dari BotFather
+- ANTHROPIC_API_KEY → key dari Anthropic
+- SHEET_ID        → ID spreadsheet
+- ANGGOTA_TRIP    → ganti dengan nama 5 teman
+
+
+## LANGKAH 5 — Install & Jalankan Lokal (untuk test)
+
+```bash
+# Install Python 3.10+ jika belum ada
+# Buat virtual environment
+python -m venv venv
+source venv/bin/activate  # Mac/Linux
+venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Jalankan bot
+python bot.py
+```
+
+Buka Telegram, cari bot Anda → /start → kirim foto struk!
+
+
+## LANGKAH 6 — Deploy ke Server (agar berjalan 24/7 GRATIS)
+
+### Opsi A: Railway.app (REKOMENDASI — paling mudah)
+1. Daftar di https://railway.app (login pakai GitHub)
+2. Klik "New Project" → "Deploy from GitHub repo"
+3. Upload kode ke GitHub dulu (atau drag & drop folder)
+4. Tambahkan file Procfile berisi:
+   worker: python bot.py
+5. Di Railway, set Environment Variables:
+   - TELEGRAM_TOKEN
+   - ANTHROPIC_API_KEY
+   - SHEET_ID
+   (Lebih aman daripada hardcode di config.py)
+6. Upload credentials.json sebagai file di Railway
+
+### Opsi B: Render.com (juga gratis)
+1. Daftar di https://render.com
+2. New → Background Worker
+3. Connect GitHub repo
+4. Build command: pip install -r requirements.txt
+5. Start command: python bot.py
+
+### Opsi C: Jalankan di PC sendiri
+Cukup biarkan terminal terbuka dan bot tetap jalan.
+Gunakan screen atau tmux agar tidak mati saat terminal ditutup.
+
+
+---
+
+## CARA PAKAI BOT
+
+| Perintah       | Fungsi                              |
+|----------------|-------------------------------------|
+| /start         | Lihat panduan penggunaan            |
+| Kirim foto     | Scan struk dan catat pengeluaran    |
+| /rekap         | Lihat total pengeluaran semua orang |
+| /batal         | Batalkan proses yang sedang berjalan|
+
+
+## FORMAT GOOGLE SHEETS
+
+Kolom yang dibuat otomatis:
+No | Tanggal | Toko | Total Struk | Pajak | Diskon | 💰 Andi | 💰 Budi | ... | Item Detail
+
+
+## TIPS & TROUBLESHOOTING
+
+❓ Claude gagal baca struk
+→ Pastikan foto terang, teks jelas, tidak blur
+→ Hindari foto miring atau terpotong
+
+❓ Error Google Sheets
+→ Pastikan email service account sudah di-share ke spreadsheet
+→ Pastikan credentials.json ada di folder yang sama dengan bot.py
+
+❓ Bot tidak merespons
+→ Cek token Telegram sudah benar
+→ Pastikan bot.py sedang berjalan
+
+❓ Pembagian kurang tepat
+→ Bot otomatis koreksi selisih pembulatan ke orang pertama
+→ Bisa disesuaikan manual di Sheets setelah tersimpan

@@ -17,7 +17,7 @@ TELEGRAM_TOKEN = os.getenv("BOT_TOKEN")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SHEET_ID = os.getenv("SHEET_ID")
 
-ANGGOTA_TRIP = ["Anisa", "Bagas", "Elya", "Hanan", "Jihan"]  # ubah sesuai kebutuhan
+ANGGOTA_TRIP = ["Bagas", "A", "B", "C", "D"]  # ubah sesuai kebutuhan
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(format="%(asctime)s │ %(levelname)s │ %(message)s", level=logging.INFO)
